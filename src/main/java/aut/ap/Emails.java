@@ -1,8 +1,7 @@
 package aut.ap;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table( name = "Emails" )
