@@ -16,6 +16,18 @@ public class Emails {
     private boolean isRead;
     private LocalDate timestamp;
 
+    public Emails(){}
+
+    public Emails(String sender,String recipient, String subject, String body, String code, boolean isRead, LocalDate timestamp){
+        this.sender = sender;
+        this.subject = subject;
+        this.recipient = recipient;
+        this.body = body;
+        this.code = code;
+        this.timestamp = timestamp;
+        this.isRead = isRead;
+    }
+
 
     public void setSender(String sender){
         this.sender = sender;

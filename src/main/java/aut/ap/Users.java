@@ -15,6 +15,16 @@ public class Users {
     @Column( unique = true )
     private String email, password;
 
+    public Users(){}
+
+    public Users(String firstName, String lastName, Integer age, String email, String password ){
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.age = age;
+        this.email = email;
+        this.password = password;
+    }
+
 
     public void setFirstName(String firstName){
         this.firstName = firstName;
