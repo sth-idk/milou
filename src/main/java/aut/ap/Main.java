@@ -225,4 +225,44 @@ public class Main {
         session.close();
     }
 
+    private static void replyToEmail() {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        System.out.print("enter email code to reply: ");
+        String code = scanner.nextLine().trim();
+        List<Emails> results = session.createQuery("FROM Emails WHERE code = :code", Emails.class)
+                .setParameter("code", code)
+                .getResultList();
+
+        Emails original = null;
+        for (Emails e : results) {
+            original = e;
+            break;
+        }
+
+
+        if (original != null && original.getRecipient().equalsIgnoreCase(alreadyLoggedin.getEmail())) {
+            System.out.print("body: ");
+            String body = scanner.nextLine();
+
+            Emails reply = new Emails();
+            reply.setSender(alreadyLoggedin.getEmail());
+            reply.setRecipient(original.getSender());
+            reply.setSubject("Re: " + original.getSubject());
+            reply.setBody(body);
+            reply.setRead(false);
+            reply.setCode(generateCode());
+            session.persist(reply);
+
+            System.out.println("successfully sent your reply to email " + code + ".\nCode: " + reply.getCode());
+        } else {
+            System.out.println("you cannot reply to this email.");
+        }
+
+        session.getTransaction().commit();
+        session.close();
+    }
+
+
 }
