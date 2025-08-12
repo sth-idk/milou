@@ -64,7 +64,7 @@ public class Main {
                     forwardEmail();
                     break;
                 case "e":
-                    sessionFactory.close();
+                    closeSessionFactory();
                     scanner.close();
                     return;
                 default:
