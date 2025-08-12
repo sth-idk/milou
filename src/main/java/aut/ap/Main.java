@@ -17,6 +17,8 @@ public class Main {
     private static void setUpSessionFactory() {
         sessionFactory = new Configuration()
                 .configure("hibernate.cfg.xml")
+                .addAnnotatedClass(Users.class)
+                .addAnnotatedClass(Emails.class)
                 .buildSessionFactory();
     }
 
@@ -85,7 +87,11 @@ public class Main {
         System.out.print("age: ");
         Integer age = Integer.parseInt(scanner.nextLine());
         System.out.print("email: ");
-        String email = scanner.nextLine().trim().toLowerCase();
+        String email = scanner.nextLine();
+        email = email.trim().toLowerCase();
+        if (!email.contains("@")) {
+            email += "@milou.com";
+        }
         System.out.print("password: ");
         String password = scanner.nextLine();
 
@@ -97,7 +103,7 @@ public class Main {
         }
 
         boolean exists = false;
-        List<Users> users = session.createQuery("FROM User", Users.class).list();
+        List<Users> users = session.createQuery("FROM Users", Users.class).list();
         for (Users user : users) {
             if (user.getEmail().equalsIgnoreCase(email)) {
                 exists = true;
@@ -118,6 +124,7 @@ public class Main {
             System.out.println("your new account is created. go ahead and login!");
         }
 
+
         session.getTransaction().commit();
         session.close();
     }
@@ -130,14 +137,16 @@ public class Main {
 
         System.out.print("email: ");
         String email = scanner.nextLine().trim().toLowerCase();
-        if (!email.contains("@"))
-            email = email.concat("@gmail.com");
+        email = email.trim().toLowerCase();
+        if (!email.contains("@")) {
+            email += "@milou.com";
+        }
 
 
         System.out.print("password: ");
         String password = scanner.nextLine();
 
-        List<Users> users = session.createQuery("FROM User", Users.class).list();
+        List<Users> users = session.createQuery("FROM Users", Users.class).list();
         for (Users u : users) {
             if (u.getEmail().equalsIgnoreCase(email) && u.getPassword().equals(password)) {
                 alreadyLoggedin = u;
