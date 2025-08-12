@@ -113,4 +113,18 @@ public class Main {
         return false;
     }
 
+    private static void showUnreadEmails() {
+        Session session = sessionFactory.openSession();
+        List<Emails> emails = session.createQuery("FROM Emails WHERE recipient = :email AND isRead = false ORDER BY id DESC", Emails.class)
+                .setParameter("email", alreadyLoggedin.getEmail())
+                .list();
+
+        System.out.println(emails.size() + "unread email(s):");
+        for (Emails e : emails) {
+            System.out.println("code: " + e.getCode() + ", sender: " + e.getSender() + ", subject: " + e.getSubject());
+        }
+
+        session.close();
+    }
+
 }
