@@ -264,5 +264,60 @@ public class Main {
         session.close();
     }
 
+    private static void forwardEmail() {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        System.out.print("enter email code to forward: ");
+        String code = scanner.nextLine().trim();
+        List<Emails> results = session.createQuery("FROM Emails WHERE code = :code", Emails.class)
+                .setParameter("code", code)
+                .getResultList();
+
+        Emails original = null;
+        for (Emails e : results) {
+            original = e;
+            break;
+        }
+
+
+        if (original != null && (original.getRecipient().equalsIgnoreCase(alreadyLoggedin.getEmail()) || original.getSender().equalsIgnoreCase(alreadyLoggedin.getEmail()))) {
+            List<String> recipients = new ArrayList<>();
+            System.out.println("enter recipient emails one by one. type 'done' when finished:");
+
+            while (true) {
+                String input = scanner.nextLine().trim();
+
+                if (input.equalsIgnoreCase("done")) {
+                    break;
+                }
+
+                if (!input.contains("@")) {
+                    input = input.concat("@milou.com");
+                }
+
+                recipients.add(input);
+            }
+
+            for (String r : recipients) {
+                Emails forward = new Emails();
+                forward.setSender(alreadyLoggedin.getEmail());
+                forward.setRecipient(r.trim().toLowerCase());
+                forward.setSubject("Fwd: " + original.getSubject());
+                forward.setBody(original.getBody());
+                forward.setRead(false);
+                forward.setCode(generateCode());
+                session.persist(forward);
+            }
+
+            System.out.println("successfully forwarded your email.\ncode: " + generateCode());
+        } else {
+            System.out.println("you cannot forward this email.");
+        }
+
+        session.getTransaction().commit();
+        session.close();
+    }
+
 
 }
