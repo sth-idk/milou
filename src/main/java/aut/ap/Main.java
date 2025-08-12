@@ -84,6 +84,33 @@ public class Main {
         session.close();
     }
 
+    private static boolean logIn() {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
 
+        System.out.print("email: ");
+        String email = scanner.nextLine().trim().toLowerCase();
+        if (!email.contains("@"))
+            email = email.concat("@gmail.com");
+
+
+        System.out.print("password: ");
+        String password = scanner.nextLine();
+
+        List<Users> users = session.createQuery("FROM User", Users.class).list();
+        for (Users u : users) {
+            if (u.getEmail().equalsIgnoreCase(email) && u.getPassword().equals(password)) {
+                alreadyLoggedin = u;
+                session.getTransaction().commit();
+                session.close();
+                return true;
+            }
+        }
+
+        System.out.println("wrong email or password.");
+        session.getTransaction().commit();
+        session.close();
+        return false;
+    }
 
 }
