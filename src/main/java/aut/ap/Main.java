@@ -177,6 +177,52 @@ public class Main {
         session.close();
     }
 
+    private static void viewEmails() {
+        System.out.println("[a]ll, [u]nread, [s]ent, Read by [c]ode:");
+        String option = scanner.nextLine().trim().toLowerCase();
 
+        Session session = sessionFactory.openSession();
+        List<Emails> emails = null;
+
+        switch (option) {
+            case "a":
+                emails = session.createQuery("FROM Emails WHERE recipient = :email OR sender = :email ORDER BY id DESC", Emails.class)
+                        .setParameter("email", alreadyLoggedin.getEmail()).list();
+                break;
+            case "u":
+                emails = session.createQuery("FROM Emails WHERE recipient = :email AND isRead = false ORDER BY id DESC", Emails.class)
+                        .setParameter("email", alreadyLoggedin.getEmail()).list();
+                break;
+            case "s":
+                emails = session.createQuery("FROM Emails WHERE sender = :email ORDER BY id DESC", Emails.class)
+                        .setParameter("email", alreadyLoggedin.getEmail()).list();
+                break;
+            case "c":
+                System.out.print("enter email code: ");
+                String code = scanner.nextLine().trim();
+                Emails email = session.createQuery("FROM Emails WHERE code = :code", Emails.class)
+                        .setParameter("code", code)
+                        .uniqueResult();
+
+                if (email != null && (email.getSender().equals(alreadyLoggedin.getEmail()) || email.getRecipient().equals(alreadyLoggedin.getEmail()))) {
+                    System.out.println("subject: " + email.getSubject());
+                    System.out.println("body: " + email.getBody());
+                    email.setRead(true);
+                } else {
+                    System.out.println("you cannot read this email.");
+                }
+                session.beginTransaction();
+                session.getTransaction().commit();
+                session.close();
+                return;
+        }
+
+        if (emails != null) {
+            for (Emails e : emails) {
+                System.out.println("code: " + e.getCode() + ", sender: " + e.getSender() + ", recipient: " + e.getRecipient() + ", subject: " + e.getSubject());
+            }
+        }
+        session.close();
+    }
 
 }
