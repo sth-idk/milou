@@ -4,6 +4,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class Main {
@@ -126,5 +128,55 @@ public class Main {
 
         session.close();
     }
+
+    private static void sendEmail() {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        List<String> recipients = new ArrayList<>();
+        System.out.println("enter recipient emails one by one. type 'done' when finished:");
+
+        while (true) {
+            String input = scanner.nextLine().trim();
+
+            if (input.equalsIgnoreCase("done")) {
+                break;
+            }
+
+            if (!input.contains("@")) {
+                input = input.concat("@milou.com");
+            }
+
+            recipients.add(input);
+        }
+
+        System.out.print("subject: ");
+        String subject = scanner.nextLine();
+        System.out.print("body: ");
+        String body = scanner.nextLine();
+
+        for (String recipientEmail : recipients) {
+            Emails email = new Emails();
+            email.setSender(alreadyLoggedin.getEmail());
+            email.setRecipient(recipientEmail);
+            email.setSubject(subject);
+            email.setBody(body);
+            email.setRead(false);
+            email.setTimestamp(LocalDate.now());
+
+            String code = generateCode();
+            email.setCode(code);
+
+            session.persist(email);
+
+            System.out.println("successfully sent your email.");
+            System.out.println("code: " + code);
+        }
+
+        session.getTransaction().commit();
+        session.close();
+    }
+
+
 
 }
