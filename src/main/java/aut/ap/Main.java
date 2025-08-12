@@ -13,31 +13,67 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     private static Users alreadyLoggedin;
     private static SessionFactory sessionFactory;
+
     private static void setUpSessionFactory() {
         sessionFactory = new Configuration()
                 .configure("hibernate.cfg.xml")
                 .buildSessionFactory();
     }
+
     private static void closeSessionFactory() {
         sessionFactory.close();
     }
 
 
 
-
-    public static void main(String[] args){
+    public static void main(String[] args) {
         setUpSessionFactory();
 
+        while (true) {
+            System.out.println("which one? [l]og in or [s]ign in");
+            String choice = scanner.nextLine().trim().toLowerCase();
 
+            if (choice.equals("s") || choice.equals("sign in")) {
+                signIn();
+            } else if (choice.equals("l") || choice.equals("log in")) {
+                if (logIn()) break;
+            } else {
+                System.out.println("invalid input.");
+            }
+        }
 
+        System.out.println("welcome back, " + alreadyLoggedin.getFirstName() + "!");
+        showUnreadEmails();
 
+        while (true) {
+            System.out.println("choose an option: [s]end, [v]iew, [r]eply, [f]orward, [e]xit");
+            String action = scanner.nextLine().trim().toLowerCase();
 
-
-        closeSessionFactory();
+            switch (action) {
+                case "s":
+                    sendEmail();
+                    break;
+                case "v":
+                    viewEmails();
+                    break;
+                case "r":
+                    replyToEmail();
+                    break;
+                case "f":
+                    forwardEmail();
+                    break;
+                case "e":
+                    sessionFactory.close();
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("invalid input.");
+            }
+        }
     }
 
 
-
+    //sign in button to be written:
     private static void signIn() {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
@@ -86,6 +122,8 @@ public class Main {
         session.close();
     }
 
+
+    //log in button to be written:
     private static boolean logIn() {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
@@ -115,6 +153,8 @@ public class Main {
         return false;
     }
 
+
+    //show unread emails button to be written:
     private static void showUnreadEmails() {
         Session session = sessionFactory.openSession();
         List<Emails> emails = session.createQuery("FROM Emails WHERE recipient = :email AND isRead = false ORDER BY id DESC", Emails.class)
@@ -129,6 +169,8 @@ public class Main {
         session.close();
     }
 
+
+    //send email button to be written:
     private static void sendEmail() {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
@@ -177,6 +219,8 @@ public class Main {
         session.close();
     }
 
+
+    //view email button to be written:
     private static void viewEmails() {
         System.out.println("[a]ll, [u]nread, [s]ent, Read by [c]ode:");
         String option = scanner.nextLine().trim().toLowerCase();
@@ -225,6 +269,8 @@ public class Main {
         session.close();
     }
 
+
+    //reply to email button to be written:
     private static void replyToEmail() {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
@@ -264,6 +310,8 @@ public class Main {
         session.close();
     }
 
+
+    //forward email button to be written:
     private static void forwardEmail() {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
@@ -319,6 +367,8 @@ public class Main {
         session.close();
     }
 
+
+    //generate code method to be written:
     private static String generateCode() {
         String letters = "abcdefghijklmnopqrstuvwxyz0123456789";
         String code = "";
@@ -330,6 +380,4 @@ public class Main {
         }
         return code;
     }
-
-
 }
