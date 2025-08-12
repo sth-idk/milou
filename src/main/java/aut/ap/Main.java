@@ -319,5 +319,17 @@ public class Main {
         session.close();
     }
 
+    private static String generateCode() {
+        String letters = "abcdefghijklmnopqrstuvwxyz0123456789";
+        String code = "";
+        Random random = new Random();
+
+        for (int i = 0; i < 6; i++) {
+            int index = random.nextInt(letters.length());
+            code = code.concat(String.valueOf(letters.charAt(index)));
+        }
+        return code;
+    }
+
 
 }
