@@ -2,6 +2,7 @@ package aut.ap;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import java.time.LocalDate;
 import java.util.*;
@@ -28,6 +29,20 @@ public class Main {
 
     public static void main(String[] args) {
         setUpSessionFactory();
+        Session session = sessionFactory.openSession();
+
+        try{
+            Transaction t = session.beginTransaction();
+            Emails email = new Emails("someone@milou.com", "farya@milou.com", "subject", "hi", "u93ofu", false, 2023, 4, 15);
+            session.persist(email);
+
+            t.commit();
+        }catch (Exception e){
+            System.out.println("Exception in the database: " +
+                    e.getMessage());
+        }
+        session.close();
+
 
         while (true) {
             System.out.println("which one? [l]og in or [s]ign in");

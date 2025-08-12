@@ -18,13 +18,13 @@ public class Emails {
 
     public Emails(){}
 
-    public Emails(String sender,String recipient, String subject, String body, String code, boolean isRead, LocalDate timestamp){
+    public Emails(String sender,String recipient, String subject, String body, String code, boolean isRead, int year, int month, int day){
         this.sender = sender;
         this.subject = subject;
         this.recipient = recipient;
         this.body = body;
         this.code = code;
-        this.timestamp = timestamp;
+        this.timestamp = LocalDate.of(year, month, day);
         this.isRead = isRead;
     }
 
