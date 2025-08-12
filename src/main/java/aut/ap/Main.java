@@ -3,9 +3,7 @@ package aut.ap;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 public class Main {
@@ -38,7 +36,8 @@ public class Main {
             if (choice.equals("s") || choice.equals("sign in")) {
                 signIn();
             } else if (choice.equals("l") || choice.equals("log in")) {
-                if (logIn()) break;
+                if (logIn())
+                    break;
             } else {
                 System.out.println("invalid input.");
             }
@@ -49,9 +48,9 @@ public class Main {
 
         while (true) {
             System.out.println("choose an option: [s]end, [v]iew, [r]eply, [f]orward, [e]xit");
-            String action = scanner.nextLine().trim().toLowerCase();
+            String button = scanner.nextLine().trim().toLowerCase();
 
-            switch (action) {
+            switch (button) {
                 case "s":
                     sendEmail();
                     break;
