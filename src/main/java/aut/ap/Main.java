@@ -9,7 +9,7 @@ import java.util.*;
 public class Main {
 
     private static final Scanner scanner = new Scanner(System.in);
-    private static Users alreadyLoggedin;
+    private static Users LoggedInUser;
     private static SessionFactory sessionFactory;
 
     private static void setUpSessionFactory() {
@@ -43,7 +43,7 @@ public class Main {
             }
         }
 
-        System.out.println("welcome back, " + alreadyLoggedin.getFirstName() + "!");
+        System.out.println("welcome back, " + LoggedInUser.getFirstName() + "!");
         showUnreadEmails();
 
         while (true) {
@@ -148,7 +148,7 @@ public class Main {
         List<Users> users = session.createQuery("FROM Users", Users.class).list();
         for (Users u : users) {
             if (u.getEmail().equalsIgnoreCase(email) && u.getPassword().equals(password)) {
-                alreadyLoggedin = u;
+                LoggedInUser = u;
                 session.getTransaction().commit();
                 session.close();
                 return true;
@@ -166,7 +166,7 @@ public class Main {
     private static void showUnreadEmails() {
         Session session = sessionFactory.openSession();
         List<Emails> emails = session.createQuery("FROM Emails WHERE recipient = :email AND isRead = false ORDER BY id DESC", Emails.class)
-                .setParameter("email", alreadyLoggedin.getEmail())
+                .setParameter("email", LoggedInUser.getEmail())
                 .list();
 
         System.out.println(emails.size() + "unread email(s):");
@@ -207,7 +207,7 @@ public class Main {
 
         for (String recipientEmail : recipients) {
             Emails email = new Emails();
-            email.setSender(alreadyLoggedin.getEmail());
+            email.setSender(LoggedInUser.getEmail());
             email.setRecipient(recipientEmail);
             email.setSubject(subject);
             email.setBody(body);
@@ -239,15 +239,15 @@ public class Main {
         switch (option) {
             case "a":
                 emails = session.createQuery("FROM Emails WHERE recipient = :email OR sender = :email ORDER BY id DESC", Emails.class)
-                        .setParameter("email", alreadyLoggedin.getEmail()).list();
+                        .setParameter("email", LoggedInUser.getEmail()).list();
                 break;
             case "u":
                 emails = session.createQuery("FROM Emails WHERE recipient = :email AND isRead = false ORDER BY id DESC", Emails.class)
-                        .setParameter("email", alreadyLoggedin.getEmail()).list();
+                        .setParameter("email", LoggedInUser.getEmail()).list();
                 break;
             case "s":
                 emails = session.createQuery("FROM Emails WHERE sender = :email ORDER BY id DESC", Emails.class)
-                        .setParameter("email", alreadyLoggedin.getEmail()).list();
+                        .setParameter("email", LoggedInUser.getEmail()).list();
                 break;
             case "c":
                 System.out.print("enter email code: ");
@@ -256,7 +256,7 @@ public class Main {
                         .setParameter("code", code)
                         .uniqueResult();
 
-                if (email != null && (email.getSender().equals(alreadyLoggedin.getEmail()) || email.getRecipient().equals(alreadyLoggedin.getEmail()))) {
+                if (email != null && (email.getSender().equals(LoggedInUser.getEmail()) || email.getRecipient().equals(LoggedInUser.getEmail()))) {
                     System.out.println("subject: " + email.getSubject());
                     System.out.println("body: " + email.getBody());
                     email.setRead(true);
@@ -296,12 +296,12 @@ public class Main {
         }
 
 
-        if (original != null && original.getRecipient().equalsIgnoreCase(alreadyLoggedin.getEmail())) {
+        if (original != null && original.getRecipient().equalsIgnoreCase(LoggedInUser.getEmail())) {
             System.out.print("body: ");
             String body = scanner.nextLine();
 
             Emails reply = new Emails();
-            reply.setSender(alreadyLoggedin.getEmail());
+            reply.setSender(LoggedInUser.getEmail());
             reply.setRecipient(original.getSender());
             reply.setSubject("Re: " + original.getSubject());
             reply.setBody(body);
@@ -337,7 +337,7 @@ public class Main {
         }
 
 
-        if (original != null && (original.getRecipient().equalsIgnoreCase(alreadyLoggedin.getEmail()) || original.getSender().equalsIgnoreCase(alreadyLoggedin.getEmail()))) {
+        if (original != null && (original.getRecipient().equalsIgnoreCase(LoggedInUser.getEmail()) || original.getSender().equalsIgnoreCase(LoggedInUser.getEmail()))) {
             List<String> recipients = new ArrayList<>();
             System.out.println("enter recipient emails one by one. type 'done' when finished:");
 
@@ -357,7 +357,7 @@ public class Main {
 
             for (String r : recipients) {
                 Emails forward = new Emails();
-                forward.setSender(alreadyLoggedin.getEmail());
+                forward.setSender(LoggedInUser.getEmail());
                 forward.setRecipient(r.trim().toLowerCase());
                 forward.setSubject("Fwd: " + original.getSubject());
                 forward.setBody(original.getBody());
